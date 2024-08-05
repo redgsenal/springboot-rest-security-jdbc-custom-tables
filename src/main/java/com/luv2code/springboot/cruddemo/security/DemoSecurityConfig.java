@@ -18,7 +18,23 @@ public class DemoSecurityConfig {
 
     @Bean
     public UserDetailsManager userDetailsManager(DataSource dataSource) {
-        return new JdbcUserDetailsManager(dataSource);
+        JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager(dataSource);
+        // define query for usernames
+        jdbcUserDetailsManager.setUsersByUsernameQuery("select user_id, pw, active from members where user_id=?");
+        // define query for authorities/roles by username
+        jdbcUserDetailsManager.setAuthoritiesByUsernameQuery("select user_id, role from roles where user_id=?");
+        // nothing matches with the default tables schemas
+        // note on the 'active' (TINYINT) column
+        /* authorities
+            - username
+            - authority
+           users
+            - username
+            - password
+            - enabled
+         */
+
+        return jdbcUserDetailsManager;
     }
 
     @Bean
